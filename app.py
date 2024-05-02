@@ -16,7 +16,7 @@ credentials = service_account.Credentials.from_service_account_file(
 )
 
 service = build('sheets', 'v4', credentials=credentials)
-sheet_id = '1LFsGU5VC63-V084TI-kFo-nfRoMjBjSi2fyPZtcHr7A'
+sheet_id = '1sc4zzNKRGGTi2ozGIZJ_Jrss8OdzqqUu7REqK0v8oiY'
 range_name = 'Sheet1!A1:C10'
 
 @app.route("/", methods = ["GET", "POST"])
