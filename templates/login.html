@@ -16,7 +16,11 @@
     <div>
         <div>
             <h1>Login in as a Teacher </h1>
-            <form action="/" method="POST">
+            <form method="POST">
+
+                {% if error %}
+                <p>{{ error }}</p>
+            {% endif %}
                 <div>
                     <label for="username">Username:</label>
                     <input type="text" id="username" name="username" required>
