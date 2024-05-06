@@ -17,7 +17,7 @@ credentials = service_account.Credentials.from_service_account_file(
 
 service = build('sheets', 'v4', credentials=credentials)
 sheet_id = '1LFsGU5VC63-V084TI-kFo-nfRoMjBjSi2fyPZtcHr7A'
-range_name = 'Sheet1!A1:C10'
+range_name = 'Sheet1!A1:D100'
 
 @app.route("/", methods = ["GET", "POST"])
 def index():
@@ -27,15 +27,8 @@ def index():
         result = service.spreadsheets().values().get(spreadsheetId=sheet_id, range=range_name).execute()
         values = result.get('values', [])
 
-        re=""
-
-        if not values:
-            re = 'No data found.'
-        else:
-            re += 'Data:'
-            for row in values:
-                re += str(row)
-        return "you did it!\n" + re #post return, should eventually lead to suggested tutors page
+        #values is good
+        return (render_template("tutorSelectPage.html", tutors = values[1:]))
 
 
 @app.route("/tutorSelect", methods=["GET", "POST"])
@@ -53,7 +46,7 @@ def tutors():
          'image': "https://antalyashawarma.com/Content/Images/photos/home_antalya_shawarma_restaurant_photo_01.png"}]
     
     if(fk.request.method=="GET"):
-        return(render_template("tutorSelectPage.html", tutors = tutors_data))
+        return "Tutors ig"
     else:
         return "Yeah idk how you posted bruh theres no form even"
 

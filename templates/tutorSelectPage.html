@@ -47,9 +47,9 @@
     <div class="person-container">
         {% for person in tutors %}
         <div class="person-box">
-            <img src="{{ person.image }}" alt="{{ person.name }} Image">
-            <h2>{{ person.name }}</h2>
-            <p>{{ person.bio }}</p>
+            <img src="{{ person[2] }}" alt="{{ person[0] }} Image">
+            <h2>{{ person[0] }}</h2>
+            <p>{{ person[1] }}</p>
             <button>Select</button>
         </div>
         {% endfor %}
