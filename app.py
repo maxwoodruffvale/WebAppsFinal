@@ -1,10 +1,11 @@
 import flask as fk
 import html
-from flask import render_template
+from flask import render_template, redirect, url_for
 import logging
 import os
 from google.oauth2 import service_account
 from googleapiclient.discovery import build
+from flask import request 
 
 logging.basicConfig(level=logging.DEBUG)
 app = fk.Flask(__name__)
@@ -15,9 +16,16 @@ credentials = service_account.Credentials.from_service_account_file(
     scopes=['https://www.googleapis.com/auth/spreadsheets']
 )
 
+
+users = {
+    'admin': '@',
+}
+
+
 service = build('sheets', 'v4', credentials=credentials)
 sheet_id = '1LFsGU5VC63-V084TI-kFo-nfRoMjBjSi2fyPZtcHr7A'
 range_name = 'Sheet1!A1:D100'
+
 
 @app.route("/", methods = ["GET", "POST"])
 def index():
@@ -30,6 +38,18 @@ def index():
         #values is good
         return (render_template("tutorSelectPage.html", tutors = values[1:]))
 
+@app.route('/login', methods=["GET", "POST"])
+def login():
+    if request.method == 'POST':
+        username = request.form['username']
+        password = request.form['password']
+        if username in users and users[username] == password:
+            return redirect(url_for('index'))
+        else: 
+            error = "Invalid username or password. Please try again."
+            return render_template('login.html', error=error)
+
+    return render_template('login.html')
 
 @app.route("/tutorSelect", methods=["GET", "POST"])
 def tutors():
@@ -52,3 +72,5 @@ def tutors():
 
 if __name__ == "__main__":
     app.run(debug=True)  
+
+    
