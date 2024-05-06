@@ -1,6 +1,6 @@
 import flask as fk
 import html
-from flask import render_template
+from flask import render_template, redirect, url_for
 import logging
 import os
 from google.oauth2 import service_account
@@ -15,6 +15,12 @@ credentials = service_account.Credentials.from_service_account_file(
     credentials_path,
     scopes=['https://www.googleapis.com/auth/spreadsheets']
 )
+
+
+users = {
+    'admin': '@',
+}
+
 
 service = build('sheets', 'v4', credentials=credentials)
 sheet_id = '1LFsGU5VC63-V084TI-kFo-nfRoMjBjSi2fyPZtcHr7A'
@@ -38,11 +44,15 @@ def index():
                 re += str(row)
         return "you did it!\n" + re #post return, should eventually lead to suggested tutors page
 
-@app.route('/', methods=['GET', 'POST'])
+
+
+@app.route('/login', methods=["GET", "POST"])
 def login():
     if request.method == 'POST':
         username = request.form['username']
         password = request.form['password']
+        if username in users and users[username] == password:
+            return redirect(url_for('index'))
 
     return render_template('login.html')
 
