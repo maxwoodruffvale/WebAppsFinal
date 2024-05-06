@@ -8678,3 +8678,4 @@ lib/urllib3-2.2.1.dist-info/licenses/LICENSE.txt
 .venv/pyvenv.cfg
 .venv/Scripts/activate
 .venv/Scripts/activate.bat
+__pycache__/app.cpython-312.pyc

@@ -24,7 +24,7 @@ users = {
 
 service = build('sheets', 'v4', credentials=credentials)
 sheet_id = '1LFsGU5VC63-V084TI-kFo-nfRoMjBjSi2fyPZtcHr7A'
-range_name = 'Sheet1!A1:C10'
+range_name = 'Sheet1!A1:D100'
 
 
 @app.route("/", methods = ["GET", "POST"])
@@ -37,7 +37,6 @@ def index():
 
         #values is good
         return (render_template("tutorSelectPage.html", tutors = values[1:]))
-
 
 @app.route('/login', methods=["GET", "POST"])
 def login():
@@ -70,7 +69,6 @@ def tutors():
         return "Tutors ig"
     else:
         return "Yeah idk how you posted bruh theres no form even"
-
 
 if __name__ == "__main__":
     app.run(debug=True)  
