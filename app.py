@@ -5,6 +5,7 @@ import logging
 import os
 from google.oauth2 import service_account
 from googleapiclient.discovery import build
+from flask import request 
 
 logging.basicConfig(level=logging.DEBUG)
 app = fk.Flask(__name__)
@@ -36,6 +37,14 @@ def index():
             for row in values:
                 re += str(row)
         return "you did it!\n" + re #post return, should eventually lead to suggested tutors page
+
+@app.route('/', methods=['GET', 'POST'])
+def login():
+    if request.method == 'POST':
+        username = request.form['username']
+        password = request.form['password']
+
+    return render_template('login.html')
 
 if __name__ == "__main__":
     app.run(debug=True)  
