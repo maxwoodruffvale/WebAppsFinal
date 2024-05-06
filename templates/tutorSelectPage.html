@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Person Selection</title>
+    <style>
+        .person-container {
+            display: flex;
+            justify-content: space-between;
+            align-items: stretch;
+        }
+        .person-box {
+            flex: 1;
+            margin: 10px;
+            padding: 20px;
+            border: 1px solid #ccc;
+            text-align: center;
+        }
+        .person-box img {
+            width: 150px;
+            height: 150px;
+            border-radius: 50%;
+            object-fit: cover;
+        }
+        .person-box h2 {
+            margin-top: 10px;
+        }
+        .person-box p {
+            margin-top: 10px;
+            min-height: 80px;
+        }
+        .person-box button {
+            padding: 10px 20px;
+            background-color: red;
+            color: #fff;
+            border: none;
+            cursor: pointer;
+        }
+        .person-box button:hover {
+            background-color: #0056b3;
+        }
+    </style>
+</head>
+<body>
+    <h1>Select a Tutor</h1>
+    <div class="person-container">
+        {% for person in tutors %}
+        <div class="person-box">
+            <img src="{{ person.image }}" alt="{{ person.name }} Image">
+            <h2>{{ person.name }}</h2>
+            <p>{{ person.bio }}</p>
+            <button>Select</button>
+        </div>
+        {% endfor %}
+    </div>
+</body>
+</html>
