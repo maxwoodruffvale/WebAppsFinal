@@ -95,14 +95,11 @@ def fetchTutors():
         values = result.get('values', [])
         
         if not values:
-            print('No data found in the Google Sheet.')
             return None
 
         tutors_data = []
         for row in values[1:]: 
-            print(row)
             name, bio, image, availability, math_classes, grade = row
-            print(name)
             tutor = {'name': name, 'bio': bio, 'image': image, 'availability': availability, 'math_classes': math_classes, 'grade': grade}
             tutors_data.append(tutor)
         
