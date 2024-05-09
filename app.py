@@ -30,22 +30,6 @@ range_name = 'Sheet1!A1:D100'
 range_name2 = 'Sheet1!A1:F100'
 
 
-def initializeDatabase():
-    conn = sqlite3.connect('database.db')
-    cursor = conn.cursor()
-    cursor.execute('''
-        CREATE TABLE IF NOT EXISTS users (
-            id INTEGER PRIMARY KEY,
-            name TEXT NOT NULL,
-            grade TEXT NOT NULL,
-            math_class TEXT NOT NULL,
-            availability TEXT NOT NULL
-        )
-    ''')
-    conn.commit()
-    conn.close()
-
-initializeDatabase()
 
 
 @app.route("/", methods = ["GET", "POST"])
@@ -57,18 +41,18 @@ def index():
         grade = request.form['class']
         math_class = request.form['math_class']
         availability = request.form['availability']
+        
 
-        conn = sqlite3.connect('database.db')
-        cursor = conn.cursor()
-        cursor.execute('''
-            INSERT INTO users (name, grade, math_class, availability)
-            VALUES (?, ?, ?, ?)
-        ''', (name, grade, math_class, availability))
-        conn.commit()
-        conn.close()
+        all_tutors = fetchTutors()
 
-        return redirect(url_for('index'))
+        filtered_tutors = filterTutors(all_tutors, grade, math_class, availability)
+        
 
+        if filtered_tutors:
+            return render_template("tutorSelectPage.html", tutors=filtered_tutors)
+        else:
+            return "No tutors available"
+        
     return render_template("studentRequest.html")
 
 @app.route('/login', methods=["GET", "POST"])
@@ -108,6 +92,16 @@ def fetchTutors():
         print(f"Error fetching tutors from Google Sheet: {e}")
         return None
 
+
+def filterTutors(tutors, grade, math_class, availability):
+    filtered_tutors = []
+    
+    for tutor in tutors:
+        print(tutor['availability'] + " " + availability)
+        if (tutor['availability'] == availability) or (tutor['math_classes'] == math_class):
+            filtered_tutors.append(tutor)
+    print(filtered_tutors)
+    return filtered_tutors
     
 
 
