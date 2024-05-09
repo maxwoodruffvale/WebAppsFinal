@@ -81,6 +81,10 @@ def login():
 
     return render_template('login.html')
 
+@app.route("/embedSpreadsheet", methods=["GET", "POST"])
+def embedSpreadsheet():
+    return render_template("spreadSheetPage.html")
+
 @app.route("/tutorSelect", methods=["GET", "POST"])
 def tutors():
     tutors_data = [{'name': 'Duke Dennis', 
