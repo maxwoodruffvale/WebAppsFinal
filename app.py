@@ -74,7 +74,7 @@ def login():
         username = request.form['username']
         password = request.form['password']
         if username in users and users[username] == password:
-            return redirect(url_for('index'))
+            return redirect(url_for('embedSpreadsheet'))
         else: 
             error = "Invalid username or password. Please try again."
             return render_template('login.html', error=error)
