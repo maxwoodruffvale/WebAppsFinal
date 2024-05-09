@@ -1,11 +1,11 @@
 import flask as fk
-import html
+
 from flask import render_template, redirect, url_for
 import logging
-import os
 from google.oauth2 import service_account
 from googleapiclient.discovery import build
 from flask import request 
+import sqlite3
 
 logging.basicConfig(level=logging.DEBUG)
 app = fk.Flask(__name__)
@@ -27,16 +27,46 @@ sheet_id = '1LFsGU5VC63-V084TI-kFo-nfRoMjBjSi2fyPZtcHr7A'
 range_name = 'Sheet1!A1:D100'
 
 
+def initializeDatabase():
+    conn = sqlite3.connect('database.db')
+    cursor = conn.cursor()
+    cursor.execute('''
+        CREATE TABLE IF NOT EXISTS users (
+            id INTEGER PRIMARY KEY,
+            name TEXT NOT NULL,
+            grade TEXT NOT NULL,
+            math_class TEXT NOT NULL,
+            availability TEXT NOT NULL
+        )
+    ''')
+    conn.commit()
+    conn.close()
+
+initializeDatabase()
+
+
 @app.route("/", methods = ["GET", "POST"])
 def index():
     if(fk.request.method == "GET"):
         return(render_template("studentRequest.html")) #defualt to the student sign up page for when a student scans qr code
-    else:
-        result = service.spreadsheets().values().get(spreadsheetId=sheet_id, range=range_name).execute()
-        values = result.get('values', [])
+    if request.method == "POST":
+        name = request.form['name']
+        grade = request.form['class']
+        math_class = request.form['math_class']
+        availability = request.form['availability']
 
-        #values is good
-        return (render_template("tutorSelectPage.html", tutors = values[1:]))
+        conn = sqlite3.connect('database.db')
+        cursor = conn.cursor()
+        cursor.execute('''
+            INSERT INTO users (name, grade, math_class, availability)
+            VALUES (?, ?, ?, ?)
+        ''', (name, grade, math_class, availability))
+        conn.commit()
+        conn.close()
+
+        return redirect(url_for('index'))
+
+    return render_template("studentRequest.html")
 
 @app.route('/login', methods=["GET", "POST"])
 def login():
