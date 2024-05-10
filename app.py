@@ -27,7 +27,7 @@ users = {
 service = build('sheets', 'v4', credentials=credentials)
 sheet_id = '1LFsGU5VC63-V084TI-kFo-nfRoMjBjSi2fyPZtcHr7A'
 range_name = 'Sheet1!A1:D100'
-range_name2 = 'Sheet1!A1:F100'
+range_name2 = 'Sheet1!A1:G100'
 
 
 
@@ -90,7 +90,7 @@ def fetchTutors():
             math_classes = row[4] if len(row) > 4 else ""
             grade = row[5] if len(row) > 5 else ""
             contact = row[6] if len(row) > 6 else ""
-            tutor = {'name': name, 'bio': bio, 'image': image, 'availability': availability, 'math_classes': math_classes, 'grade': grade}
+            tutor = {'name': name, 'bio': bio, 'image': image, 'availability': availability, 'math_classes': math_classes, 'grade': grade, 'contact':contact}
             tutors_data.append(tutor)
         
         return tutors_data
@@ -109,7 +109,6 @@ def filterTutors(tutors, grade, math_class, availability):
     return filtered_tutors
 
     
-
 
 @app.route("/tutorSelect", methods=["GET", "POST"])
 def tutors():
