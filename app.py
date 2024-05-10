@@ -82,8 +82,14 @@ def fetchTutors():
             return None
 
         tutors_data = []
-        for row in values[1:]: 
-            name, bio, image, availability, math_classes, grade = row
+        for row in values[1:]:
+            name = row[0] if len(row) > 0 else ""
+            bio = row[1] if len(row) > 1 else ""
+            image = row[2] if len(row) > 2 else ""
+            availability = row[3] if len(row) > 3 else ""
+            math_classes = row[4] if len(row) > 4 else ""
+            grade = row[5] if len(row) > 5 else ""
+            contact = row[6] if len(row) > 6 else ""
             tutor = {'name': name, 'bio': bio, 'image': image, 'availability': availability, 'math_classes': math_classes, 'grade': grade}
             tutors_data.append(tutor)
         
@@ -95,13 +101,13 @@ def fetchTutors():
 
 def filterTutors(tutors, grade, math_class, availability):
     filtered_tutors = []
-    
+
     for tutor in tutors:
-        print(tutor['availability'] + " " + availability)
-        if (tutor['availability'] == availability) or (tutor['math_classes'] == math_class):
+        if tutor['availability'] == availability or math_class in tutor['math_classes']:
             filtered_tutors.append(tutor)
-    print(filtered_tutors)
+
     return filtered_tutors
+
     
 
 
