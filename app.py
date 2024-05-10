@@ -27,7 +27,7 @@ users = {
 service = build('sheets', 'v4', credentials=credentials)
 sheet_id = '1LFsGU5VC63-V084TI-kFo-nfRoMjBjSi2fyPZtcHr7A'
 range_name = 'Sheet1!A1:D100'
-range_name2 = 'Sheet1!A1:F100'
+range_name2 = 'Sheet1!A1:G100'
 
 
 
@@ -82,9 +82,15 @@ def fetchTutors():
             return None
 
         tutors_data = []
-        for row in values[1:]: 
-            name, bio, image, availability, math_classes, grade = row
-            tutor = {'name': name, 'bio': bio, 'image': image, 'availability': availability, 'math_classes': math_classes, 'grade': grade}
+        for row in values[1:]:
+            name = row[0] if len(row) > 0 else ""
+            bio = row[1] if len(row) > 1 else ""
+            image = row[2] if len(row) > 2 else ""
+            availability = row[3] if len(row) > 3 else ""
+            math_classes = row[4] if len(row) > 4 else ""
+            grade = row[5] if len(row) > 5 else ""
+            contact = row[6] if len(row) > 6 else ""
+            tutor = {'name': name, 'bio': bio, 'image': image, 'availability': availability, 'math_classes': math_classes, 'grade': grade, 'contact':contact}
             tutors_data.append(tutor)
         
         return tutors_data
@@ -95,15 +101,14 @@ def fetchTutors():
 
 def filterTutors(tutors, grade, math_class, availability):
     filtered_tutors = []
-    
-    for tutor in tutors:
-        print(tutor['availability'] + " " + availability)
-        if (tutor['availability'] == availability) or (tutor['math_classes'] == math_class):
-            filtered_tutors.append(tutor)
-    print(filtered_tutors)
-    return filtered_tutors
-    
 
+    for tutor in tutors:
+        if tutor['availability'] == availability or math_class in tutor['math_classes']:
+            filtered_tutors.append(tutor)
+
+    return filtered_tutors
+
+    
 
 @app.route("/tutorSelect", methods=["GET", "POST"])
 def tutors():
