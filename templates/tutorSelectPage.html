@@ -62,26 +62,46 @@
 
     <script>
             document.addEventListener('DOMContentLoaded', function() {
-                var selectButtons = document.querySelectorAll('#selectedTutor');
+    var selectButtons = document.querySelectorAll('#selectedTutor');
 
-                selectButtons.forEach(function(button) {
-                    button.addEventListener('click', function() {
-                        
-                        var tutorName = this.parentElement.querySelector('h2').innerText;
-                        var tutorElement = this.parentElement;
-                        var tutorBio = tutorElement.querySelector('p:nth-of-type(1)').innerText;
-                        var tutorAvailability = tutorElement.querySelector('p:nth-of-type(2)').innerText;
-                        var tutorMathClasses = tutorElement.querySelector('p:nth-of-type(3)').innerText;
-                        var tutorGrade = tutorElement.querySelector('p:nth-of-type(4)').innerText;
-                        var tutorContact = tutorElement.querySelector('p:nth-of-type(5)').innerText;
-                                    
-                        
-                    
-                        console.log(tutorContact)
-                        
-                    });
-                });
+    selectButtons.forEach(function(button) {
+        button.addEventListener('click', function() {
+            var tutorName = this.parentElement.querySelector('h2').innerText;
+            var tutorBio = this.parentElement.querySelector('p:nth-of-type(1)').innerText;
+            var tutorAvailability = this.parentElement.querySelector('p:nth-of-type(2)').innerText;
+            var tutorMathClasses = this.parentElement.querySelector('p:nth-of-type(3)').innerText;
+            var tutorGrade = this.parentElement.querySelector('p:nth-of-type(4)').innerText;
+            var tutorContact = this.parentElement.querySelector('p:nth-of-type(5)').innerText;
+
+            // Send data to Flask backend
+            fetch('/save_tutor_info', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    name: tutorName,
+                    bio: tutorBio,
+                    availability: tutorAvailability,
+                    mathClasses: tutorMathClasses,
+                    grade: tutorGrade,
+                    contact: tutorContact
+                })
+            })
+            .then(response => {
+                if (response.ok) {
+                    console.log('Tutor information saved successfully.');
+                } else {
+                    console.error('Failed to save tutor information:', response.statusText);
+                }
+            })
+            .catch(error => {
+                console.error('Error occurred:', error);
             });
+        });
+    });
+});
+
 
     </script>
 </body>

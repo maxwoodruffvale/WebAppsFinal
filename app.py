@@ -108,6 +108,17 @@ def filterTutors(tutors, grade, math_class, availability):
 
     return filtered_tutors
 
+
+saved_tutor_info = {}  
+
+@app.route('/save_tutor_info', methods=['POST'])
+def save_tutor_info():
+    tutor_info = request.json
+    saved_tutor_info[tutor_info['name']] = tutor_info
+    print(tutor_info)
+    return 'Tutor information saved successfully.'
+
+
     
 
 @app.route("/tutorSelect", methods=["GET", "POST"])
