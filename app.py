@@ -9,6 +9,40 @@ import sqlite3
 import gspread
 from oauth2client.service_account import ServiceAccountCredentials
 from twilio.rest import Client
+import smtplib
+from email.mime.multipart import MIMEMultipart
+from email.mime.text import MIMEText
+
+def send_email(subject, message, to_email):
+    smtp_server = 'smtp.gmail.com'
+    smtp_port = 587
+    smtp_username = 'lasamathtutoringsite@gmail.com'
+    smtp_password = 'wdoe ocaa dxuh pfyu'
+
+    msg = MIMEMultipart()
+    msg['From'] = smtp_username
+    msg['To'] = to_email
+    msg['Subject'] = subject
+
+    msg.attach(MIMEText(message, 'plain'))
+
+    try:
+        server = smtplib.SMTP(smtp_server, smtp_port)
+        server.starttls()
+
+        server.login(smtp_username, smtp_password)
+
+        server.send_message(msg)
+
+        print('Email sent successfully.')
+    except Exception as e:
+        print('Error occurred while sending email:', str(e))
+    finally:
+        server.quit()
+
+
+
+
 
 
 def send_sms(to_phone, message):
@@ -46,7 +80,8 @@ range_name = 'Sheet1!A1:D100'
 range_name2 = 'Sheet1!A1:G100'
 
 
-student_number=""
+student_number="5128770023"
+student_email="maxv8978@gmail.com"
 
 @app.route("/", methods = ["GET", "POST"])
 def index():
@@ -58,6 +93,7 @@ def index():
         math_class = request.form['math_class']
         availability = request.form['availability']
         student_number = request.form['phone_number']
+        student_email = request.form['email']
         print(student_number)
         all_tutors = fetchTutors()
 
@@ -130,9 +166,10 @@ def save_tutor_info():
     saved_tutor_info = tutor_info
     print(tutor_info)
     print(student_number)
-    
-    send_sms("5128770023", 'LASA Math Tutoring Service: Your tutor is ' + tutor_info['name'] + ". You can contact them at " + tutor_info['phone'] + " or " + tutor_info['contact'])
-    
+    msg = 'LASA Math Tutoring Service: Your tutor is ' + tutor_info['name'] + ". You can contact them at " + tutor_info['phone'] + " or " + tutor_info['contact']
+    #send_sms("5128770023", 'LASA Math Tutoring Service: Your tutor is ' + tutor_info['name'] + ". You can contact them at " + tutor_info['phone'] + " or " + tutor_info['contact'])
+    print(student_email)
+    send_email('LASA MAth tutoring lets go', msg, student_email)
     return "something"
 
 
