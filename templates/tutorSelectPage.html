@@ -47,6 +47,7 @@
     <h1>Select a Tutor</h1>
     <div class="person-container">
         {% for tutor in tutors %}
+        
         <div class="person-box">
             <img src="{{ tutor['image'] }}" alt="{{ tutor['name'] }} Image">
             <h2>{{ tutor['name'] }}</h2>
@@ -55,6 +56,7 @@
             <p><strong>Math Classes:</strong> {{ tutor['math_classes'] }}</p>
             <p><strong>Grade:</strong> {{ tutor['grade'] }}</p>
             <p> <strong>Contact: </strong>{{ tutor['contact'] }}</p>
+            <p> <strong>Contact #: </strong>{{ tutor['phone'] }}</p>
             <button id="selectedTutor">Select</button>
         </div>
         {% endfor %}
@@ -72,6 +74,7 @@
             var tutorMathClasses = this.parentElement.querySelector('p:nth-of-type(3)').innerText;
             var tutorGrade = this.parentElement.querySelector('p:nth-of-type(4)').innerText;
             var tutorContact = this.parentElement.querySelector('p:nth-of-type(5)').innerText;
+            var tutorPhone = this.parentElement.querySelector('p:nth-of-type(6)').innerText;
 
             // Send data to Flask backend
             fetch('/save_tutor_info', {
@@ -85,12 +88,14 @@
                     availability: tutorAvailability,
                     mathClasses: tutorMathClasses,
                     grade: tutorGrade,
-                    contact: tutorContact
+                    contact: tutorContact,
+                    phone: tutorPhone
                 })
             })
             .then(response => {
                 if (response.ok) {
                     console.log('Tutor information saved successfully.');
+                    window.location.href = "/contacted";
                 } else {
                     console.error('Failed to save tutor information:', response.statusText);
                 }

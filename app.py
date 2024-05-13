@@ -8,6 +8,56 @@ from flask import request
 import sqlite3
 import gspread
 from oauth2client.service_account import ServiceAccountCredentials
+from twilio.rest import Client
+import smtplib
+from email.mime.multipart import MIMEMultipart
+from email.mime.text import MIMEText
+
+def send_email(subject, message, to_email):
+    smtp_server = 'smtp.gmail.com'
+    smtp_port = 587
+    smtp_username = 'lasamathtutoringsite@gmail.com'
+    smtp_password = 'wdoe ocaa dxuh pfyu'
+
+    msg = MIMEMultipart()
+    msg['From'] = smtp_username
+    msg['To'] = to_email
+    msg['Subject'] = subject
+
+    msg.attach(MIMEText(message, 'plain'))
+
+    try:
+        server = smtplib.SMTP(smtp_server, smtp_port)
+        server.starttls()
+
+        server.login(smtp_username, smtp_password)
+
+        server.send_message(msg)
+
+        print('Email sent successfully.')
+    except Exception as e:
+        print('Error occurred while sending email:', str(e))
+    finally:
+        server.quit()
+
+
+
+
+
+
+def send_sms(to_phone, message):
+    account_sid = 'ACafffbe5893fc5c4dc679f3985ea11ff8'
+    auth_token = '41b1a7e63bcf856c87c0488d046527c8'
+
+    client = Client(account_sid, auth_token)
+
+    message = client.messages.create(
+        body=message,
+        from_='+18333662406',
+        to=to_phone
+    )
+
+    print('Message sent. SID:', message.sid)
 
 logging.basicConfig(level=logging.DEBUG)
 app = fk.Flask(__name__)
@@ -30,19 +80,21 @@ range_name = 'Sheet1!A1:D100'
 range_name2 = 'Sheet1!A1:G100'
 
 
-
+student_number="5128770023"
+student_email="maxv8978@gmail.com"
 
 @app.route("/", methods = ["GET", "POST"])
 def index():
     if(fk.request.method == "GET"):
         return(render_template("studentRequest.html")) #defualt to the student sign up page for when a student scans qr code
-    if request.method == "POST":
+    else:
         name = request.form['name']
         grade = request.form['class']
         math_class = request.form['math_class']
         availability = request.form['availability']
-        
-
+        student_number = request.form['phone_number']
+        student_email = request.form['email']
+        print(student_number)
         all_tutors = fetchTutors()
 
         filtered_tutors = filterTutors(all_tutors, grade, math_class, availability)
@@ -52,8 +104,6 @@ def index():
             return render_template("tutorSelectPage.html", tutors=filtered_tutors)
         else:
             return "No tutors available"
-        
-    return render_template("studentRequest.html")
 
 @app.route('/login', methods=["GET", "POST"])
 def login():
@@ -90,14 +140,14 @@ def fetchTutors():
             math_classes = row[4] if len(row) > 4 else ""
             grade = row[5] if len(row) > 5 else ""
             contact = row[6] if len(row) > 6 else ""
-            tutor = {'name': name, 'bio': bio, 'image': image, 'availability': availability, 'math_classes': math_classes, 'grade': grade, 'contact':contact}
+            phone = row[7] if len(row) > 7 else ""
+            tutor = {'name': name, 'bio': bio, 'image': image, 'availability': availability, 'math_classes': math_classes, 'grade': grade, 'contact':contact, 'phone':phone}
             tutors_data.append(tutor)
         
         return tutors_data
     except Exception as e:
         print(f"Error fetching tutors from Google Sheet: {e}")
         return None
-
 
 def filterTutors(tutors, grade, math_class, availability):
     filtered_tutors = []
@@ -108,18 +158,25 @@ def filterTutors(tutors, grade, math_class, availability):
 
     return filtered_tutors
 
-
-saved_tutor_info = {}  
+saved_tutor_info = ''  
 
 @app.route('/save_tutor_info', methods=['POST'])
 def save_tutor_info():
     tutor_info = request.json
-    saved_tutor_info[tutor_info['name']] = tutor_info
+    saved_tutor_info = tutor_info
     print(tutor_info)
-    return 'Tutor information saved successfully.'
+    print(student_number)
+    msg = 'LASA Math Tutoring Service: Your tutor is ' + tutor_info['name'] + ". You can contact them at " + tutor_info['phone'] + " or " + tutor_info['contact']
+    #send_sms("5128770023", 'LASA Math Tutoring Service: Your tutor is ' + tutor_info['name'] + ". You can contact them at " + tutor_info['phone'] + " or " + tutor_info['contact'])
+    print(student_email)
+    send_email('LASA MAth tutoring lets go', msg, student_email)
+    return "something"
 
 
-    
+@app.route('/contacted', methods=["GET", "POST"])
+def contacted():
+    if(fk.request.method=="GET"):
+        return render_template("contacted.html", tutor=saved_tutor_info)
 
 @app.route("/tutorSelect", methods=["GET", "POST"])
 def tutors():
@@ -129,7 +186,7 @@ def tutors():
             return fk.render_template("tutorSelectPage.html", tutors=tutors_data)
         else:
             return "No tutors available"
-
+        
 if __name__ == "__main__":
     app.run(debug=True)  
 
