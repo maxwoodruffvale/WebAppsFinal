@@ -13,6 +13,8 @@ import smtplib
 from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
 import sqlite3
+import hmac
+from passlib.hash import sha256_crypt
 
 global msg
 
@@ -75,8 +77,11 @@ credentials = service_account.Credentials.from_service_account_file(
 
 
 users = {
-    'admin': '@',
+    'admin': {
+        'password_hash': '$5$rounds=535000$oQnmhzF/IL71CDHt$98asW.DxEC4DF2dVeCKuWLORKDfhKcZghPc.fe3S2P1'  
+    }
 }
+
 
 
 service = build('sheets', 'v4', credentials=credentials)
@@ -84,6 +89,8 @@ sheet_id = '1LFsGU5VC63-V084TI-kFo-nfRoMjBjSi2fyPZtcHr7A'
 range_name = 'Sheet1!A1:D100'
 range_name2 = 'Sheet1!A1:G100'
 
+hashed_password = sha256_crypt.hash("password123")
+print("bruh: " + hashed_password)
 
 student_number="5128770023"
 student_email="ahantyasharma57@gmail.com"
@@ -115,16 +122,20 @@ def login():
     if request.method == 'POST':
         username = request.form['username']
         password = request.form['password']
-        if username in users and users[username] == password:
-            return redirect(url_for('embedSpreadsheet'))
-        else: 
-            error = "Invalid username or password. Please try again."
-            return render_template('login.html', error=error)
+        if username in users:
+            stored_password_hash = users[username]['password_hash']
+            if sha256_crypt.verify(password, stored_password_hash):
+                session['logged_in'] = True
+                return redirect(url_for('embedSpreadsheet'))
+        error = "Invalid username or password. Please try again."
+        return render_template('login.html', error=error)
 
     return render_template('login.html')
 
-@app.route("/embedSpreadsheet", methods=["GET", "POST"])
+@app.route('/embedSpreadsheet', methods=["GET", "POST"])
 def embedSpreadsheet():
+    if not session.get('logged_in'):
+        return redirect(url_for('login'))
     return render_template("spreadSheetPage.html")
 
 def fetchTutors():
