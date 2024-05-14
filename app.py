@@ -106,7 +106,7 @@ def index():
         
 
         if filtered_tutors:
-            return render_template("tutorSelectPage.html", tutors=filtered_tutors)
+            return render_template("tutorSelectPage.html", tutors=filtered_tutors[:3] if len(filtered_tutors) >= 3 else filtered_tutors[:])
         else:
             return "No tutors available"
 
