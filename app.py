@@ -88,6 +88,7 @@ service = build('sheets', 'v4', credentials=credentials)
 sheet_id = '1LFsGU5VC63-V084TI-kFo-nfRoMjBjSi2fyPZtcHr7A'
 range_name = 'Sheet1!A1:D100'
 range_name2 = 'Sheet1!A1:G100'
+#password123
 
 hashed_password = sha256_crypt.hash("password123")
 print("bruh: " + hashed_password)
