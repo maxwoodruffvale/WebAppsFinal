@@ -6,30 +6,43 @@
     <title>Tutors Listed</title>
 </head>
 <style>
+    html, body {
+        height: 100%;
+        margin: 0;
+        padding: 0;
+        font-family: Arial, sans-serif;
+    }
 
-
-
-html, body {
-            height: 100%;
-            margin: 0;
-            padding: 0;
-            font-family: Arial, sans-serif;
-        }
-
-     .embedded {
-            height: 100%;
-            width: 100%;
-            border: none; /* Remove iframe border */
-        }
+    .embedded {
+        height: calc(100% - 40px); 
+        width: 100%;
+        border: none; 
+    }
 
     #ok {
         text-align: center;
         vertical-align: middle;
         line-height: 90px; 
+        margin-bottom: 0;
+    }
+
+    #homeButton {
+        position: fixed;
+        top: 0;
+        right: 0;
+        margin: 10px;
+        padding: 8px 16px;
+        background-color: #0056b3;
+        color: #fff;
+        border: none;
+        border-radius: 4px;
+        cursor: pointer;
+        text-decoration: None;
     }
 </style>
 <body>
-    <h2 id="ok" >Tutors Listed</h2>
+    <h2 id="ok">Edit Tutor Info</h2>
+    <a id="homeButton" href="/">Exit to Home</a>
     <iframe src="https://docs.google.com/spreadsheets/d/1LFsGU5VC63-V084TI-kFo-nfRoMjBjSi2fyPZtcHr7A/edit#gid=0" width="100%" class="embedded"></iframe>
 </body>
 </html>

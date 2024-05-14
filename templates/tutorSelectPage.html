@@ -76,7 +76,7 @@
             var tutorContact = this.parentElement.querySelector('p:nth-of-type(5)').innerText;
             var tutorPhone = this.parentElement.querySelector('p:nth-of-type(6)').innerText;
 
-            // Send data to Flask backend
+            
             fetch('/save_tutor_info', {
                 method: 'POST',
                 headers: {

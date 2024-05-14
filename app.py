@@ -1,6 +1,6 @@
 import flask as fk
 
-from flask import render_template, redirect, url_for
+from flask import render_template, redirect, url_for, session
 import logging
 from google.oauth2 import service_account
 from googleapiclient.discovery import build
@@ -12,6 +12,9 @@ from twilio.rest import Client
 import smtplib
 from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
+import sqlite3
+
+global msg
 
 def send_email(subject, message, to_email):
     smtp_server = 'smtp.gmail.com'
@@ -62,6 +65,8 @@ def send_sms(to_phone, message):
 logging.basicConfig(level=logging.DEBUG)
 app = fk.Flask(__name__)
 
+app.secret_key = b'_5#y2L"F4Q8z\n\xec]/'
+
 credentials_path = 'spreadsheet-data-422018-cceb62cdb5ee.json'
 credentials = service_account.Credentials.from_service_account_file(
     credentials_path,
@@ -81,7 +86,7 @@ range_name2 = 'Sheet1!A1:G100'
 
 
 student_number="5128770023"
-student_email="maxv8978@gmail.com"
+student_email="ahantyasharma57@gmail.com"
 
 @app.route("/", methods = ["GET", "POST"])
 def index():
@@ -141,7 +146,7 @@ def fetchTutors():
             grade = row[5] if len(row) > 5 else ""
             contact = row[6] if len(row) > 6 else ""
             phone = row[7] if len(row) > 7 else ""
-            tutor = {'name': name, 'bio': bio, 'image': image, 'availability': availability, 'math_classes': math_classes, 'grade': grade, 'contact':contact, 'phone':phone}
+            tutor = {'name': name, 'bio': bio, 'image': image, 'availability': availability, 'math_classes': math_classes, 'grade': grade, 'contact': contact, 'phone':phone}
             tutors_data.append(tutor)
         
         return tutors_data
@@ -160,23 +165,70 @@ def filterTutors(tutors, grade, math_class, availability):
 
 saved_tutor_info = ''  
 
+
+from flask import g
+
+DATABASE = 'tutor_info.db'
+
+def get_db():
+    db = getattr(g, '_database', None)
+    if db is None:
+        db = g._database = sqlite3.connect(DATABASE)
+    return db
+
+@app.teardown_appcontext
+def close_connection(exception):
+    db = getattr(g, '_database', None)
+    if db is not None:
+        db.close()
+
+
 @app.route('/save_tutor_info', methods=['POST'])
 def save_tutor_info():
     tutor_info = request.json
-    saved_tutor_info = tutor_info
-    print(tutor_info)
-    print(student_number)
-    msg = 'LASA Math Tutoring Service: Your tutor is ' + tutor_info['name'] + ". You can contact them at " + tutor_info['phone'] + " or " + tutor_info['contact']
-    #send_sms("5128770023", 'LASA Math Tutoring Service: Your tutor is ' + tutor_info['name'] + ". You can contact them at " + tutor_info['phone'] + " or " + tutor_info['contact'])
-    print(student_email)
-    send_email('LASA MAth tutoring lets go', msg, student_email)
-    return "something"
+    name = tutor_info['name']
+    phone = tutor_info['phone']
+    contact = tutor_info['contact']
 
+    db = get_db()
+
+    db.execute("INSERT INTO tutor_info (name, phone, contact) VALUES (?, ?, ?)", (name, phone, contact))
+    db.commit()
+
+    msg = 'skibidi'
+
+    contact = contact.replace("Contact:", "").strip()
+
+    if phone: 
+        msg = f'LASA Math Tutoring Service: Your tutor is {name}. You can contact them at {contact}'
+    else:
+        msg = f'LASA Math Tutoring Service: Your tutor is {name}. You can contact them at {contact}'
+    send_email('LASA Math Tutoring lets go', msg, student_email)
+    return redirect(url_for('contacted'))
 
 @app.route('/contacted', methods=["GET", "POST"])
 def contacted():
-    if(fk.request.method=="GET"):
-        return render_template("contacted.html", tutor=saved_tutor_info)
+    db = get_db()
+
+    cur = db.execute("SELECT name, phone, contact FROM tutor_info ORDER BY ROWID DESC LIMIT 1")
+    row = cur.fetchone()
+    if row:
+        name, phone, contact = row
+        contact = contact.replace("Contact:", "").strip()
+        if phone != "Contact #:":
+            msg = f'LASA Math Tutoring Service: Your tutor is {name}. You can contact them at {phone} or {contact}'
+        else:
+            msg = f'LASA Math Tutoring Service: Your tutor is {name}. You can contact them at {contact}'
+    else:
+        msg = None
+
+    return render_template("contacted.html", msg=msg)
+
+
+if __name__ == "__main__":
+    app.run(debug=True)
+
+
 
 @app.route("/tutorSelect", methods=["GET", "POST"])
 def tutors():
