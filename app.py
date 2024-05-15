@@ -199,22 +199,18 @@ def close_connection(exception):
 def save_tutor_info():
     tutor_info = request.json
     name = tutor_info['name']
-    phone = tutor_info['phone']
     contact = tutor_info['contact']
 
     db = get_db()
 
-    db.execute("INSERT INTO tutor_info (name, phone, contact) VALUES (?, ?, ?)", (name, phone, contact))
+    db.execute("INSERT INTO tutor_info (name, contact) VALUES (?, ?)", (name, contact))
     db.commit()
 
     msg = 'skibidi'
 
     contact = contact.replace("Contact:", "").strip()
 
-    if phone: 
-        msg = f'LASA Math Tutoring Service: Your tutor is {name}. You can contact them at {contact}'
-    else:
-        msg = f'LASA Math Tutoring Service: Your tutor is {name}. You can contact them at {contact}'
+    msg = f'LASA Math Tutoring Service: Your tutor is {name}. You can contact them at {contact}'
     send_email('LASA Math Tutoring lets go', msg, student_email)
     return redirect(url_for('contacted'))
 
