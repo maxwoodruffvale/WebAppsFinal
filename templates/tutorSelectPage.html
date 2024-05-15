@@ -68,11 +68,19 @@
         .person-box button:hover {
             background-color: #0056b3;
         }
+
+                .person-container.one-tutor .person-box {
+            flex-basis: calc(90% - 20px);
+        }
+
+        .person-container.two-tutors .person-box {
+            flex-basis: calc(40% - 20px);
+        }
     </style>
 </head>
 <body>
     <h1>Select a Tutor</h1>
-    <div>
+    <div class="person-container {% if tutors|length == 1 %}one-tutor{% elif tutors|length == 2 %}two-tutors{% endif %}">
         {% for tutor in tutors %}
         <div class="person-box">
             <img src="{{ tutor['image'] }}" alt="{{ tutor['name'] }} Image">

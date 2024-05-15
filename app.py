@@ -223,10 +223,7 @@ def contacted():
     if row:
         name, phone, contact = row
         contact = contact.replace("Contact:", "").strip()
-        if phone != "Contact #:":
-            msg = f'LASA Math Tutoring Service: Your tutor is {name}. You can contact them at {phone} or {contact}'
-        else:
-            msg = f'LASA Math Tutoring Service: Your tutor is {name}. You can contact them at {contact}'
+        msg = f'LASA Math Tutoring Service: Your tutor is {name}. You can contact them at {contact}'
     else:
         msg = None
 
