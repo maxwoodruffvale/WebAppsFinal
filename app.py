@@ -100,10 +100,11 @@ def index():
         grade = request.form['class']
         math_class = request.form['math_class']
         availability = request.form['availability']
+        day_availability = request.form['day_availability']
         student_email = request.form['email']
         all_tutors = fetchTutors()
 
-        filtered_tutors = filterTutors(all_tutors, grade, math_class, availability)
+        filtered_tutors = filterTutors(all_tutors, grade, math_class, availability, day_availability)
         
 
         if filtered_tutors:
@@ -151,7 +152,8 @@ def fetchTutors():
             grade = row[5] if len(row) > 5 else ""
             contact = row[6] if len(row) > 6 else ""
             phone = row[7] if len(row) > 7 else ""
-            tutor = {'name': name, 'bio': bio, 'image': image, 'availability': availability, 'math_classes': math_classes, 'grade': grade, 'contact': contact, 'phone':phone}
+            day_availability = row[8] if len(row) > 8 else ""
+            tutor = {'name': name, 'bio': bio, 'image': image, 'availability': availability, 'math_classes': math_classes, 'grade': grade, 'contact': contact, 'phone':phone, 'day_availability': day_availability}
             tutors_data.append(tutor)
         
         return tutors_data
@@ -159,11 +161,11 @@ def fetchTutors():
         print(f"Error fetching tutors from Google Sheet: {e}")
         return None
 
-def filterTutors(tutors, grade, math_class, availability):
+def filterTutors(tutors, grade, math_class, availability, day_availability):
     filtered_tutors = []
 
     for tutor in tutors:
-        if tutor['availability'] == availability or math_class in tutor['math_classes']:
+        if availability in tutor['availability'] and math_class in tutor['math_classes'] and day_availability in tutor['day_availability']:
             filtered_tutors.append(tutor)
 
     return filtered_tutors

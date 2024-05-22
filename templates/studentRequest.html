@@ -142,18 +142,28 @@
           <option value="Linear/Multi">Multivariable Calculus and Linear Algebra</option>
         </select>
 
+        <label for="day_availability">Which day are you free for tutoring?</label> 
+        <select id="day_availability" name="day_availability">
+          <option value="Monday">Monday</option>
+          <option value="Tuesday">Tuesday</option>
+          <option value="Wednesday">Wednesday</option>
+          <option value="THursday">Thursday</option>
+          <option value="Friday">Friday</option>
+          <option value="Saturday">Saturday</option>
+          <option value="Sunday">Sunday</option>
+        </select>
+
         <label for="availability">When are you available for tutoring?</label> 
         <select id="availability" name="availability">
-          <option value="Before">Morning before School</option>
-          <option value="Lunch">Lunch</option>
-          <option value="Online 10-11 AM">Online 10-11 AM</option>
-          <option value="Online 1-3 PM">Online 1-3 PM</option>
-          <option value="Online 4-6 PM">Online 4-6 PM</option>
+          <option value="Morning">Morning</option>
+          <option value="Afternoon">Afternoon</option>
+          <option value="Evening">Evening</option>
         </select>
 
         <label for="emailaddress">What is your email address?(Personal not AISD)</label> 
         <input type="text" name="email" id="email">
 
+        <p style="text-align: center; color:white; background-color: lightcoral; border: 1px solid black; padding:10px">***Don't use <strong>AISD wifi</strong> or a <strong>VPN</strong> when submitting as they block our emails***</p>
         <input type="submit" value="Submit">
     </form>
 </body>
