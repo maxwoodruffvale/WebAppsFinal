@@ -242,22 +242,12 @@ def contacted():
 
     return render_template("contacted.html", msg=msg)
 
+@app.route('/support', methods=["GET"])
+def support():
+    return render_template("support.html")
+
 
 if __name__ == "__main__":
     app.run(debug=True)
-
-
-
-#@app.route("/tutorSelect", methods=["GET", "POST"])
-#def tutors():
-#    if fk.request.method == "GET":
-#        tutors_data = fetchTutors()
-#        if tutors_data:
-#            return fk.render_template("tutorSelectPage.html", tutors=tutors_data)
-#        else:
-#            return "No tutors available"
-        
-if __name__ == "__main__":
-    app.run(debug=True)  
 
     
