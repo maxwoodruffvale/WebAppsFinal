@@ -83,20 +83,24 @@
     <div class="person-container {% if tutors|length == 1 %}one-tutor{% elif tutors|length == 2 %}two-tutors{% endif %}">
         {% for tutor in tutors %}
         <div class="person-box">
-            <img src="{{ tutor['image'] }}" alt="{{ tutor['name'] }} Image">
-            <h2>{{ tutor['name'] }}</h2>
-            <p>{{ tutor['bio'] }}</p>
-            <p><strong>Availability:</strong> {{ tutor['availability'] }}</p>
-            <p><strong>Math Classes:</strong> {{ tutor['math_classes'] }}</p>
-            <p><strong>Grade:</strong> {{ tutor['grade'] }}</p>
-            <p><strong>Contact: </strong>{{ tutor['contact'] }}</p>
-            <button class="select-button">Select</button>
+            <form method="post" action="/tutorSelectPage">
+                <img src="{{ tutor['image'] }}" alt="{{ tutor['name'] }} Image">
+                <h2>{{ tutor['name'] }}</h2>
+                <p>{{ tutor['bio'] }}</p>
+                <p><strong>Availability:</strong> {{ tutor['availability'] }}</p>
+                <p><strong>Math Classes:</strong> {{ tutor['math_classes'] }}</p>
+                <p><strong>Grade:</strong> {{ tutor['grade'] }}</p>
+                <p><strong>Contact: </strong>{{ tutor['contact'] }}</p>
+                <input type="hidden" name="tutor-data" value = "{{ tutor['name'], tutor['contact'], tutor['bio'], tutor['availability'], tutor['math_classes'], tutor['grade'] }}">
+                <input type="hidden" name="student_email" value = " {{ studentEmail }}">
+                <button type="submit" class="select-button">Select</button>
+            </form>
         </div>
         {% endfor %}
     </div>
 
     <script>
-        document.addEventListener('DOMContentLoaded', function() {
+        /*document.addEventListener('DOMContentLoaded', function() {
             var selectButtons = document.querySelectorAll('.select-button');
 
             selectButtons.forEach(function(button) {
@@ -138,7 +142,7 @@
                     window.location.href = "/contacted";
                 });
             });
-        });
+        });*/
     </script>
 </body>
 </html>

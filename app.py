@@ -37,18 +37,13 @@ def send_email(subject, message, to_email):
 
         server.login(smtp_username, smtp_password)
 
-        server.send_message(msg)
+        server.sendmail(smtp_username, to_email, msg.as_string())
 
         print('Email sent successfully.')
     except Exception as e:
         print('Error occurred while sending email:', str(e))
     finally:
         server.quit()
-
-
-
-
-
 
 def send_sms(to_phone, message):
     account_sid = 'ACafffbe5893fc5c4dc679f3985ea11ff8'
@@ -87,14 +82,14 @@ users = {
 service = build('sheets', 'v4', credentials=credentials)
 sheet_id = '1LFsGU5VC63-V084TI-kFo-nfRoMjBjSi2fyPZtcHr7A'
 range_name = 'Sheet1!A1:D100'
-range_name2 = 'Sheet1!A1:G100'
+range_name2 = 'Sheet1!A1:I100'
 #password123
 
 hashed_password = sha256_crypt.hash("password123")
 print("bruh: " + hashed_password)
 
 student_number="5128770023"
-student_email="ahantyasharma57@gmail.com"
+student_email=""
 
 @app.route("/", methods = ["GET", "POST"])
 def index():
@@ -114,7 +109,7 @@ def index():
         
 
         if filtered_tutors:
-            return render_template("tutorSelectPage.html", tutors=filtered_tutors[:3] if len(filtered_tutors) >= 3 else filtered_tutors[:])
+            return render_template("tutorSelectPage.html", tutors=filtered_tutors[:3] if len(filtered_tutors) >= 3 else filtered_tutors[:], studentEmail = student_email)
         else:
             return "No tutors available"
 
@@ -195,6 +190,24 @@ def close_connection(exception):
         db.close()
 
 
+@app.route("/tutorSelectPage", methods=["GET", "POST"])
+def test_jawn():
+    if fk.request.method == "GET":
+        return "this was the get oh brother<br>Yeah my bad we're lowkey throwing at coding and my computer screen broke since my girlfriend dropped it. Try again I suppose?"
+    else:
+        info = request.form["tutor-data"]
+        info = info[1:-1].split(", ")
+        print(info)
+        name = info[0][1:-1]
+        contact=info[1][1:-1]
+        msg = f'LASA Math Tutoring Service: Your tutor is {name}. You can contact them at {contact}'
+
+        student_email = request.form["student_email"].replace("'", "").replace('"', "").replace(" ", "")
+        send_email('Your Tutor for LASA Math Tutoring', msg, student_email)
+        #add jawn for the thingy
+        return render_template("contacted.html", msg=msg)
+
+
 @app.route('/save_tutor_info', methods=['POST'])
 def save_tutor_info():
     tutor_info = request.json
@@ -211,14 +224,14 @@ def save_tutor_info():
     contact = contact.replace("Contact:", "").strip()
 
     msg = f'LASA Math Tutoring Service: Your tutor is {name}. You can contact them at {contact}'
-    send_email('LASA Math Tutoring lets go', msg, student_email)
+    #send_email('LASA Math Tutoring lets go', msg, student_email)
     return redirect(url_for('contacted'))
 
 @app.route('/contacted', methods=["GET", "POST"])
 def contacted():
     db = get_db()
 
-    cur = db.execute("SELECT name, phone, contact FROM tutor_info ORDER BY ROWID DESC LIMIT 1")
+    cur = db.execute("SELECT name, phone, contact FROM tutor_info ORDER BY ROWID ASC LIMIT 1")
     row = cur.fetchone()
     if row:
         name, phone, contact = row
@@ -229,22 +242,12 @@ def contacted():
 
     return render_template("contacted.html", msg=msg)
 
+@app.route('/support', methods=["GET"])
+def support():
+    return render_template("support.html")
+
 
 if __name__ == "__main__":
     app.run(debug=True)
-
-
-
-@app.route("/tutorSelect", methods=["GET", "POST"])
-def tutors():
-    if fk.request.method == "GET":
-        tutors_data = fetchTutors()
-        if tutors_data:
-            return fk.render_template("tutorSelectPage.html", tutors=tutors_data)
-        else:
-            return "No tutors available"
-        
-if __name__ == "__main__":
-    app.run(debug=True)  
 
     
