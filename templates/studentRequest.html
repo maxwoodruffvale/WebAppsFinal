@@ -70,18 +70,17 @@
       }
 
       .btn {
-        text-decoration: none;
-        padding: 0.5rem;
-        border: none;
-        background-color: #0056b3;
-        color: #fff;
-        border-radius: 4px;
-        cursor: pointer;
-        align-items: center;
-        margin-left: 20px;
-        z-index:2;
-      }
-      
+      text-decoration: none;
+      border: 4px solid #0056b3; 
+      background-color: #0056b3;
+      color: #fff;
+      border-radius: 4px;
+      cursor: pointer;
+      align-items: center;
+      margin-left: 20px;
+      display: inline-block;
+      line-height: 1.5; 
+}
 
       #phone_number,
       #email {
@@ -104,7 +103,7 @@
   </head>
   <body>
     
-    <h2 id="ok"> LASA Math Department</h2>
+    <!-- <h2 id="ok"> LASA Math Department</h2> -->
     <form id="formo" method="post" action="/">
         <table>
           <tr>
@@ -152,9 +151,7 @@
           <option value="Online 4-6 PM">Online 4-6 PM</option>
         </select>
 
-        <label for="phone">What is your phone number?</label> 
-        <input type="text" name="phone_number" id="phone_number">
-        <label for="emailaddress">What is your email address?</label> 
+        <label for="emailaddress">What is your email address?(Personal not AISD)</label> 
         <input type="text" name="email" id="email">
 
         <input type="submit" value="Submit">
