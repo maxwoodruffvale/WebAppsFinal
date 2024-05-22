@@ -102,13 +102,16 @@ def index():
         availability = request.form['availability']
         day_availability = request.form['day_availability']
         student_email = request.form['email']
-        all_tutors = fetchTutors()
 
+        student = [name, grade, math_class, availability, day_availability, student_email]
+
+        all_tutors = fetchTutors()
+        
         filtered_tutors = filterTutors(all_tutors, grade, math_class, availability, day_availability)
         
 
         if filtered_tutors:
-            return render_template("tutorSelectPage.html", tutors=filtered_tutors[:3] if len(filtered_tutors) >= 3 else filtered_tutors[:], studentEmail = student_email)
+            return render_template("tutorSelectPage.html", tutors=filtered_tutors[:3] if len(filtered_tutors) >= 3 else filtered_tutors[:], Student=student)
         else:
             return "No tutors available"
 
@@ -200,12 +203,30 @@ def test_jawn():
         print(info)
         name = info[0][1:-1]
         contact=info[1][1:-1]
-        msg = f'LASA Math Tutoring Service: Your tutor is {name}. You can contact them at {contact}'
 
-        student_email = request.form["student_email"].replace("'", "").replace('"', "").replace(" ", "")
-        send_email('Your Tutor for LASA Math Tutoring', msg, student_email)
+        student = request.form["student"]
+        print(student)
+        chars = "[]'\""
+        for c in chars:
+            student = student.replace(c, "")
+        student=student.split(", ")
+        print(student)
+
+        student_msg = f'LASA Math Tutoring Service: Your tutor is {name}. You can contact them at {contact}. They also recieved an email and may reach out soon.'
+
+        tutor_msg = f'LASA Math Tutoring Service: your new student is {student[0]} in {student[2]}. They are in {student[1]}th grade. They want to meet on {student[4]} in the {student[3]}. You can contact them at {student[5]}'
+        
+        harrelson_msg = f'LASA Math Tutoring Service: {student[0]} has been matched up with {name} to learn {student[2]} on {student[4]} in the {student[3]}. Tutor email: {contact}, student email: {student[5]}'
+        
+        print(student_msg)
+        print(tutor_msg)
+        print(harrelson_msg)
+        
+        send_email('Your Tutor for LASA Math Tutoring', student_msg, student[5])
+        send_email("LASA Math Tutoring new student for you", tutor_msg, contact)
+        #send_email("LASA Math Tutoring form matvch", harrelson_msg, "sarah.harrelson2@austinisd.org")
         #add jawn for the thingy
-        return render_template("contacted.html", msg=msg)
+        return render_template("contacted.html", msg=student_msg)
 
 
 @app.route('/save_tutor_info', methods=['POST'])

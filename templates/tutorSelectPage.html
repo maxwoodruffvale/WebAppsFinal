@@ -93,7 +93,7 @@
                 <p><strong>Grade:</strong> {{ tutor['grade'] }}</p>
                 <p><strong>Contact: </strong>{{ tutor['contact'] }}</p>
                 <input type="hidden" name="tutor-data" value = "{{ tutor['name'], tutor['contact'], tutor['bio'], tutor['availability'], tutor['math_classes'], tutor['grade'] }}">
-                <input type="hidden" name="student_email" value = " {{ studentEmail }}">
+                <input type="hidden" name="student" value = " {{ Student }}">
                 <button type="submit" class="select-button">Select</button>
             </form>
         </div>
