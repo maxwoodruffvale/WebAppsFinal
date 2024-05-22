@@ -19,6 +19,7 @@ from passlib.hash import sha256_crypt
 global msg
 
 def send_email(subject, message, to_email):
+    print("gyat ballsamongus")
     smtp_server = 'smtp.gmail.com'
     smtp_port = 587
     smtp_username = 'lasamathtutoringsite@gmail.com'
@@ -88,7 +89,6 @@ range_name2 = 'Sheet1!A1:I100'
 hashed_password = sha256_crypt.hash("password123")
 print("bruh: " + hashed_password)
 
-student_number="5128770023"
 student_email=""
 
 @app.route("/", methods = ["GET", "POST"])
@@ -100,9 +100,7 @@ def index():
         grade = request.form['class']
         math_class = request.form['math_class']
         availability = request.form['availability']
-        student_number = request.form['phone_number']
         student_email = request.form['email']
-        print(student_number)
         all_tutors = fetchTutors()
 
         filtered_tutors = filterTutors(all_tutors, grade, math_class, availability)
@@ -229,18 +227,18 @@ def save_tutor_info():
 
 @app.route('/contacted', methods=["GET", "POST"])
 def contacted():
-    db = get_db()
+    #db = get_db()
 
-    cur = db.execute("SELECT name, phone, contact FROM tutor_info ORDER BY ROWID ASC LIMIT 1")
-    row = cur.fetchone()
-    if row:
-        name, phone, contact = row
-        contact = contact.replace("Contact:", "").strip()
-        msg = f'LASA Math Tutoring Service: Your tutor is {name}. You can contact them at {contact}'
-    else:
-        msg = None
+    #cur = db.execute("SELECT name, phone, contact FROM tutor_info ORDER BY ROWID ASC LIMIT 1")
+    #row = cur.fetchone()
+    #if row:
+    #    name, phone, contact = row
+    #    contact = contact.replace("Contact:", "").strip()
+    #    msg = f'LASA Math Tutoring Service: Your tutor is {name}. You can contact them at {contact}'
+    #else:
+    #    msg = None
 
-    return render_template("contacted.html", msg=msg)
+    return render_template("contacted.html", msg="")
 
 @app.route('/support', methods=["GET"])
 def support():
