@@ -1,6 +1,5 @@
 import flask as fk
-
-from flask import render_template, redirect, url_for, session
+from flask import render_template, redirect, url_for, session, request
 import logging
 from google.oauth2 import service_account
 from googleapiclient.discovery import build
@@ -15,6 +14,7 @@ from email.mime.text import MIMEText
 import sqlite3
 import hmac
 from passlib.hash import sha256_crypt
+import socket
 
 global msg
 
@@ -60,6 +60,14 @@ def send_sms(to_phone, message):
 
     print('Message sent. SID:', message.sid)
 
+def ip_to_number(ip):
+    return int.from_bytes(map(int, ip.split('.')), byteorder='big')
+
+def is_ip_in_range(ip, range_start, range_end):
+    ip_num = ip_to_number(ip)
+    return ip_num >= ip_to_number(range_start) and ip_num <= ip_to_number(range_end)
+
+
 logging.basicConfig(level=logging.DEBUG)
 app = fk.Flask(__name__)
 
@@ -94,27 +102,37 @@ student_email=""
 @app.route("/", methods = ["GET", "POST"])
 def index():
     if(fk.request.method == "GET"):
-        return(render_template("studentRequest.html")) #defualt to the student sign up page for when a student scans qr code
+        user_ip = request.headers.get('X-Forwarded-For', request.remote_addr)
+        print(user_ip)
+        range_start = '10.223.149.1'
+        range_end = '10.223.149.255'
+
+        error=""
+        if is_ip_in_range(user_ip, range_start, range_end):
+            error="AISD Wifi"
+        
+        #return f'Your IP is {user_ip}'
+        return(render_template("studentRequest.html", error=error)) #defualt to the student sign up page for when a student scans qr code
     else:
         name = request.form['name']
-        grade = request.form['class']
+        grade = ''
         math_class = request.form['math_class']
         availability = request.form['availability']
         day_availability = request.form['day_availability']
         student_email = request.form['email']
+        langauge = request.form['language']
 
         student = [name, grade, math_class, availability, day_availability, student_email]
 
         all_tutors = fetchTutors()
         
-        filtered_tutors = filterTutors(all_tutors, grade, math_class, availability, day_availability)
+        filtered_tutors = filterTutors(all_tutors, grade, math_class, availability, day_availability, langauge)
         
 
         if filtered_tutors:
             return render_template("tutorSelectPage.html", tutors=filtered_tutors[:3] if len(filtered_tutors) >= 3 else filtered_tutors[:], Student=student)
         else:
-            return "No tutors available"
-
+            return render_tempate("noTutors.html")
 @app.route('/login', methods=["GET", "POST"])
 def login():
     if request.method == 'POST':
@@ -156,7 +174,8 @@ def fetchTutors():
             contact = row[6] if len(row) > 6 else ""
             phone = row[7] if len(row) > 7 else ""
             day_availability = row[8] if len(row) > 8 else ""
-            tutor = {'name': name, 'bio': bio, 'image': image, 'availability': availability, 'math_classes': math_classes, 'grade': grade, 'contact': contact, 'phone':phone, 'day_availability': day_availability}
+            languages = row[9] if len(row) > 9 else ""
+            tutor = {'name': name, 'bio': bio, 'image': image, 'availability': availability, 'math_classes': math_classes, 'grade': grade, 'contact': contact, 'phone':phone, 'day_availability': day_availability, 'languages': languages}
             tutors_data.append(tutor)
         
         return tutors_data
@@ -164,12 +183,23 @@ def fetchTutors():
         print(f"Error fetching tutors from Google Sheet: {e}")
         return None
 
-def filterTutors(tutors, grade, math_class, availability, day_availability):
+def filterTutors(tutors, grade, math_class, availability, day_availability, language):
     filtered_tutors = []
-
+    print(availability)
+    print(math_class)
+    print(day_availability)
     for tutor in tutors:
-        if availability in tutor['availability'] and math_class in tutor['math_classes'] and day_availability in tutor['day_availability']:
-            filtered_tutors.append(tutor)
+        print(tutor['availability'])
+        print(tutor['math_classes'])
+        print(tutor["day_availability"])
+        
+        if availability.lower() in tutor['availability'].lower() and math_class.lower() in tutor['math_classes'].lower() and day_availability.lower() in tutor['day_availability'].lower():
+            if language and language !="":
+                if(language.lower in tutor['languages'].lower()):
+                    filtered_tutors.append(tutor)
+            else:
+                filtered_tutors.append(tutor)
+            
 
     return filtered_tutors
 
@@ -212,11 +242,11 @@ def test_jawn():
         student=student.split(", ")
         print(student)
 
-        student_msg = f'LASA Math Tutoring Service: Your tutor is {name}. You can contact them at {contact}. They also recieved an email and may reach out soon.'
+        student_msg = f"LASA Math Tutoring Service: Your tutor is {name}. You can contact them at {contact}. They also recieved an email and may reach out soon. If they haven't reached out or you havent heard from them in 48 hours, please contact sarah.harrelson2@austinisd.org"
 
-        tutor_msg = f'LASA Math Tutoring Service: your new student is {student[0]} in {student[2]}. They are in {student[1]}th grade. They want to meet on {student[4]} in the {student[3]}. You can contact them at {student[5]}'
+        tutor_msg = f'LASA Math Tutoring Service: your new student is {student[0]} in {student[2]}. They want to meet on {student[4]} in the {student[3]}. You can contact them at {student[5]}'
         
-        harrelson_msg = f'LASA Math Tutoring Service: {student[0]} has been matched up with {name} to learn {student[2]} on {student[4]} in the {student[3]}. Tutor email: {contact}, student email: {student[5]}'
+        harrelson_msg = f'LASA Math Tutoring Service: {student[0]} has been matched up with {name} to learn {student[2]} on {student[4]} in the {student[3]} time period. Tutor email: {contact}, student email: {student[5]}'
         
         print(student_msg)
         print(tutor_msg)
@@ -269,6 +299,6 @@ def support():
 
 
 if __name__ == "__main__":
-    app.run(debug=True)
+    app.run(host='0.0.0.0', port=5000)
 
     

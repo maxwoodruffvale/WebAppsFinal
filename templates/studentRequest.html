@@ -57,7 +57,11 @@
       input[type="submit"] {
         width: 100%;
         padding: 12px 20px;
+
         background-color: #0056b3;
+        
+        
+        
         color: #fff;
         border: none;
         border-radius: 4px;
@@ -118,31 +122,27 @@
             </td>
           </tr>
         </table>
+        {% if error == "AISD Wifi" %}
+          <p style="text-align: center; color:white; background-color: lightcoral; border: 1px solid black; padding:10px">YOU ARE ON AISD WIFI! THE FORM WILL NOT CONTACT ON AISD WIFI. USE IT ON A FRIENDS HOT SPOT</p>
+        {% endif %}
         
         <label for="name">Name</label>
         <input type="text" id="name" name="name">
 
-        <label for="class">What grade are you in?</label> 
-        <select id="class" name="class">
-          <option value="9">Freshman</option>
-          <option value="10">Sophomore</option>
-          <option value="11">Junior</option>
-          <option value="12">Senior</option>
-        </select>
-
         <label for="math_class">What math class do you need help with?</label> 
         <select id="math_class" name="math_class">
           <option value="Algebra 1">Algebra 1</option>  
-          <option value="Algebra 2">Alegbra 2 AB/BC</option>
+          <option value="Algebra 2">Algebra 2 AB/BC</option>
           <option value="Geometry">Geometry AB/BC</option>
-          <option value="PreCalculus">Precalculus AB/BC</option>
-          <option value="AP Calculus AB">AP Calculus AB</option>
-          <option value="AP Calculus BC">AP Calculus BC</option>
-          <option value="AP Statistics">AP Statistics</option>
-          <option value="Linear/Multi">Multivariable Calculus and Linear Algebra</option>
+          <option value="Precalc">Precalculus AB/BC</option>
+          <option value="Calculus">AP Calculus AB/BC</option>
+          <option value="Statistics">AP Statistics</option>
+          <option value="Linear">Multivariable Calculus and Linear Algebra</option>
+          <option value="Amr">AMR</option>
+          <option value="Logic">Logic/CPS</option>
         </select>
 
-        <label for="day_availability">Which day are you free for tutoring?</label> 
+        <label for="day_availability">What is your best day for tutoring? (tutors can meet more than one time a week)</label> 
         <select id="day_availability" name="day_availability">
           <option value="Monday">Monday</option>
           <option value="Tuesday">Tuesday</option>
@@ -155,16 +155,25 @@
 
         <label for="availability">When are you available for tutoring?</label> 
         <select id="availability" name="availability">
-          <option value="Morning">Morning</option>
-          <option value="Afternoon">Afternoon</option>
-          <option value="Evening">Evening</option>
+          <option value="before">Before School</option>
+          <option value="lunch">Lunch</option>
+          <option value="after">After School</option>
+          <option value="other">Other</option>
         </select>
+
+        <label for="language">(Optional) Do you speak any other languages other than english at home that should be considered in making a match?</label> 
+        <input type="text" name="language" id = "email">
 
         <label for="emailaddress">What is your email address?(Personal not AISD)</label> 
         <input type="text" name="email" id="email">
 
-        <p style="text-align: center; color:white; background-color: lightcoral; border: 1px solid black; padding:10px">***Don't use <strong>AISD wifi</strong> or a <strong>VPN</strong> when submitting as they block our emails***</p>
-        <input type="submit" value="Submit">
+        <!--<p style="text-align: center; color:white; background-color: lightcoral; border: 1px solid black; padding:10px">***Don't use <strong>AISD wifi</strong> or a <strong>VPN</strong> when submitting as they block our emails***</p>
+        -->
+        {% if error == "AISD Wifi" %}
+          <input type="submit" value="Submit" disabled style="background-color: grey;">
+        {% else %}
+          <input type="submit" value="Submit">
+        {% endif %}
     </form>
 </body>
 </html>
