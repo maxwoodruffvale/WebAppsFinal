@@ -7,19 +7,15 @@ from flask import request
 import sqlite3
 import gspread
 from oauth2client.service_account import ServiceAccountCredentials
-from twilio.rest import Client
 import smtplib
 from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
-import sqlite3
-import hmac
+#import hmac
 from passlib.hash import sha256_crypt
-import socket
 
 global msg
 
 def send_email(subject, message, to_email):
-    print("gyat ballsamongus")
     smtp_server = 'smtp.gmail.com'
     smtp_port = 587
     smtp_username = 'lasamathtutoringsite@gmail.com'
@@ -46,6 +42,7 @@ def send_email(subject, message, to_email):
     finally:
         server.quit()
 
+"""
 def send_sms(to_phone, message):
     account_sid = 'ACafffbe5893fc5c4dc679f3985ea11ff8'
     auth_token = '41b1a7e63bcf856c87c0488d046527c8'
@@ -59,6 +56,7 @@ def send_sms(to_phone, message):
     )
 
     print('Message sent. SID:', message.sid)
+"""
 
 def ip_to_number(ip):
     return int.from_bytes(map(int, ip.split('.')), byteorder='big')
@@ -280,23 +278,11 @@ def save_tutor_info():
 
 @app.route('/contacted', methods=["GET", "POST"])
 def contacted():
-    #db = get_db()
-
-    #cur = db.execute("SELECT name, phone, contact FROM tutor_info ORDER BY ROWID ASC LIMIT 1")
-    #row = cur.fetchone()
-    #if row:
-    #    name, phone, contact = row
-    #    contact = contact.replace("Contact:", "").strip()
-    #    msg = f'LASA Math Tutoring Service: Your tutor is {name}. You can contact them at {contact}'
-    #else:
-    #    msg = None
-
     return render_template("contacted.html", msg="")
 
 @app.route('/support', methods=["GET"])
 def support():
     return render_template("support.html")
-
 
 if __name__ == "__main__":
     app.run(host='0.0.0.0', port=5000)
